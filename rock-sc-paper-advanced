@@ -1,0 +1,43 @@
+#  rock,gun,lightning,devil,dragon,water,air,paper,sponge,wolf,tree,human,snake,scissors,fire
+
+import random
+
+user_name = input('Enter your name: ')
+print(f'Hello, {user_name}')
+options = input().split(',')
+options = ['rock', 'paper', 'scissors'] if len(options) <= 1 else options
+print("Okay, let's start")
+
+with open('rating.txt', 'r', encoding='utf-8') as ff:
+    flag = 0
+    for i in ff.readlines():
+        if user_name in i:
+            i = i.split()
+            user_rating = int(i[1])
+            flag = 1
+    user_rating = 0 if flag == 0 else user_rating
+
+
+def win(move, ai_move):
+    options_modif = options[options.index(move)+1:] + options[0:options.index(move)]
+    return True if ai_move in (options_modif[int(len(options_modif)/2):]) else False
+
+
+move = input()
+while move != '!exit':
+    ai_move = random.choice([*options])
+    results = {'Lose': f'Sorry, but computer chose {ai_move}',
+               'Draw': f'There is a draw ({ai_move})',
+               'Win': f'Well done. Computer chose {ai_move} and failed',
+               'Invalid': 'Invalid input',
+               '!rating': user_rating}
+    if move == '!rating':
+        print(f"Your rating: {results['!rating']}")
+    else:
+        round_score = (('Invalid' * (move not in options and move != '!exit')) or
+                        ('Win' * win(move, ai_move)) or
+                        ('Draw' * (move == ai_move)) or 'Lose')
+        print(results[round_score])
+        user_rating += 100 * (round_score == 'Win') + 50 * (round_score == 'Draw')
+    move = input()
+print('Bye!')
